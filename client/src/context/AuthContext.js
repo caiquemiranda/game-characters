@@ -1,6 +1,9 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
+// Configuração global do Axios com timeout maior
+axios.defaults.timeout = 30000; // 30 segundos
+
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -9,16 +12,24 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    // API base URL - versão ajustada para Docker
+    const apiUrl = process.env.NODE_ENV === 'production'
+        ? '/api'
+        : (process.env.REACT_APP_API_URL || 'http://localhost:5000/api');
+
     // Verificar se o usuário está logado ao carregar
     useEffect(() => {
         const checkUser = async () => {
             if (localStorage.getItem('token')) {
                 setAuthToken(localStorage.getItem('token'));
                 try {
-                    const res = await axios.get('/api/auth/me');
+                    console.log('Verificando autenticação do usuário...');
+                    const res = await axios.get(`${apiUrl}/auth/me`);
+                    console.log('Resposta da API:', res.data);
                     setUser(res.data.user);
                     setIsAuthenticated(true);
                 } catch (err) {
+                    console.error('Erro na autenticação:', err.message);
                     localStorage.removeItem('token');
                     setError(err.response?.data?.message || 'Erro ao autenticar usuário');
                 }
@@ -27,7 +38,7 @@ export const AuthProvider = ({ children }) => {
         };
 
         checkUser();
-    }, []);
+    }, [apiUrl]);
 
     // Configurar token no cabeçalho
     const setAuthToken = (token) => {
@@ -41,7 +52,9 @@ export const AuthProvider = ({ children }) => {
     // Registrar usuário
     const register = async (formData) => {
         try {
-            const res = await axios.post('/api/auth/register', formData);
+            console.log('Enviando requisição de registro para:', `${apiUrl}/auth/register`);
+            const res = await axios.post(`${apiUrl}/auth/register`, formData);
+            console.log('Resposta do registro:', res.data);
 
             localStorage.setItem('token', res.data.token);
             setAuthToken(res.data.token);
@@ -53,15 +66,19 @@ export const AuthProvider = ({ children }) => {
 
             return { success: true };
         } catch (err) {
-            setError(err.response?.data?.message || 'Erro ao registrar usuário');
-            return { success: false, message: err.response?.data?.message || 'Erro ao registrar usuário' };
+            console.error('Erro no registro:', err);
+            const errorMsg = err.response?.data?.message || 'Erro ao registrar usuário. Verifique a conexão com o servidor.';
+            setError(errorMsg);
+            return { success: false, message: errorMsg };
         }
     };
 
     // Login de usuário
     const login = async (formData) => {
         try {
-            const res = await axios.post('/api/auth/login', formData);
+            console.log('Enviando requisição de login para:', `${apiUrl}/auth/login`);
+            const res = await axios.post(`${apiUrl}/auth/login`, formData);
+            console.log('Resposta do login:', res.data);
 
             localStorage.setItem('token', res.data.token);
             setAuthToken(res.data.token);
@@ -73,8 +90,10 @@ export const AuthProvider = ({ children }) => {
 
             return { success: true };
         } catch (err) {
-            setError(err.response?.data?.message || 'Credenciais inválidas');
-            return { success: false, message: err.response?.data?.message || 'Credenciais inválidas' };
+            console.error('Erro no login:', err);
+            const errorMsg = err.response?.data?.message || 'Credenciais inválidas ou problema de conexão com o servidor.';
+            setError(errorMsg);
+            return { success: false, message: errorMsg };
         }
     };
 

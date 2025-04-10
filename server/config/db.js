@@ -19,15 +19,21 @@ async function initializeDatabase() {
   let connection;
   try {
     // Tenta conectar várias vezes (útil para esperar MySQL iniciar no Docker)
-    let retries = 5;
+    let retries = 15; // Aumentado para 15 tentativas
     while (retries) {
       try {
+        console.log(`Tentando conectar ao banco de dados (${16 - retries}/15)...`);
         connection = await pool.getConnection();
+        console.log('Conexão com o banco de dados estabelecida com sucesso!');
         break;
       } catch (err) {
         retries -= 1;
         console.log(`Falha ao conectar ao banco de dados. Tentativas restantes: ${retries}`);
-        await new Promise(resolve => setTimeout(resolve, 5000)); // espera 5 segundos
+        if (retries === 0) {
+          console.log('Erro de conexão:', err.message);
+        }
+        // Aumentado para 10 segundos de espera entre tentativas
+        await new Promise(resolve => setTimeout(resolve, 10000));
       }
     }
 
