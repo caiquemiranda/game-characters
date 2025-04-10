@@ -29,12 +29,13 @@ Um aplicativo web para criar e personalizar personagens de jogos com sistema de 
 ### Pré-requisitos
 - Node.js
 - MySQL Server
+- Docker e Docker Compose (opcional, para ambiente containerizado)
 
-### Instalação
+### Instalação sem Docker
 
 1. Clone o repositório:
 ```
-git clone https://caiquemiranda/game-characters.git
+git clone https://github.com/caiquemiranda/game-characters.git
 cd game-characters
 ```
 
@@ -71,6 +72,39 @@ npm start
 http://localhost:3000
 ```
 
+### Instalação com Docker
+
+1. Clone o repositório:
+```
+git clone https://github.com/caiquemiranda/game-characters.git
+cd game-characters
+```
+
+2. Inicie os containers Docker:
+```
+docker-compose up -d
+```
+
+3. O aplicativo estará disponível em:
+```
+http://localhost:3000
+```
+
+Os seguintes serviços serão inicializados:
+- MySQL: `localhost:3306`
+- API Backend: `localhost:5000`
+- Frontend React: `localhost:3000`
+
+Para parar os containers:
+```
+docker-compose down
+```
+
+Para visualizar os logs:
+```
+docker-compose logs -f
+```
+
 ## Estrutura do Projeto
 
 ```
@@ -80,10 +114,13 @@ game-characters/
   │   └── src/               # Código fonte React
   │       ├── components/    # Componentes React
   │       └── context/       # Contextos para gerenciamento de estado
-  └── server/                # Backend Node.js/Express
-      ├── config/            # Configurações
-      ├── models/            # Modelos de dados
-      └── routes/            # Rotas da API
+  ├── server/                # Backend Node.js/Express
+  │   ├── config/            # Configurações
+  │   ├── models/            # Modelos de dados
+  │   └── routes/            # Rotas da API
+  ├── docker-compose.yml     # Configuração Docker Compose
+  ├── .dockerignore          # Arquivos ignorados pelo Docker
+  └── README.md              # Documentação do projeto
 ```
 
 ## Licença
