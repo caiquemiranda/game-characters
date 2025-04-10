@@ -1,0 +1,138 @@
+/* Lista de Personagens */
+.character-list-container {
+    padding: 1rem 0;
+}
+
+.character-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.character-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.character-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.character-card:hover {
+    transform: translateY(-5px);
+}
+
+.character-info {
+    padding: 1.5rem;
+}
+
+.character-info h3 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.character-attributes {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.character-actions {
+    display: flex;
+    padding: 1rem 1.5rem;
+    background-color: #f8f9fa;
+    border-top: 1px solid #eee;
+}
+
+.character-actions .btn {
+    flex: 1;
+}
+
+.no-characters {
+    background: white;
+    padding: 2rem;
+    text-align: center;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.loading {
+    text-align: center;
+    padding: 2rem;
+    font-size: 1.2rem;
+    color: var(--primary-color);
+}
+
+/* Formulário de Personagem */
+.character-form-container {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.character-form-container h2 {
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+}
+
+.character-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.attribute-group,
+.appearance-group {
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 5px;
+}
+
+.attribute-group h3,
+.appearance-group h3 {
+    margin-bottom: 1rem;
+    color: var(--dark-color);
+    font-size: 1.2rem;
+}
+
+.form-control-range {
+    width: 100%;
+    height: 6px;
+    -webkit-appearance: none;
+    background: #ddd;
+    border-radius: 5px;
+    margin-top: 0.5rem;
+}
+
+.form-control-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+    .character-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .attribute-group,
+    .appearance-group {
+        padding: 1rem;
+    }
+}
