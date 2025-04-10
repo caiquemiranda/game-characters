@@ -34,7 +34,7 @@ Um aplicativo web para criar e personalizar personagens de jogos com sistema de 
 
 1. Clone o repositório:
 ```
-git clone https://seu-repositorio/game-characters.git
+git clone https://caiquemiranda/game-characters.git
 cd game-characters
 ```
 
