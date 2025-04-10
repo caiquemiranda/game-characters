@@ -5,22 +5,38 @@ dotenv.config();
 
 // Configuração do banco de dados
 const pool = mysql.createPool({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'game_characters',
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
+  host: process.env.DB_HOST || 'localhost',
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || '',
+  database: process.env.DB_NAME || 'game_characters',
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 });
 
 // Função para inicializar o banco de dados e criar tabelas se não existirem
 async function initializeDatabase() {
-    try {
-        const connection = await pool.getConnection();
+  let connection;
+  try {
+    // Tenta conectar várias vezes (útil para esperar MySQL iniciar no Docker)
+    let retries = 5;
+    while (retries) {
+      try {
+        connection = await pool.getConnection();
+        break;
+      } catch (err) {
+        retries -= 1;
+        console.log(`Falha ao conectar ao banco de dados. Tentativas restantes: ${retries}`);
+        await new Promise(resolve => setTimeout(resolve, 5000)); // espera 5 segundos
+      }
+    }
 
-        // Criar tabela de usuários
-        await connection.query(`
+    if (!connection) {
+      throw new Error('Não foi possível conectar ao banco de dados após várias tentativas');
+    }
+
+    // Criar tabela de usuários
+    await connection.query(`
       CREATE TABLE IF NOT EXISTS users (
         id INT AUTO_INCREMENT PRIMARY KEY,
         username VARCHAR(50) NOT NULL UNIQUE,
@@ -30,8 +46,8 @@ async function initializeDatabase() {
       )
     `);
 
-        // Criar tabela de personagens
-        await connection.query(`
+    // Criar tabela de personagens
+    await connection.query(`
       CREATE TABLE IF NOT EXISTS characters (
         id INT AUTO_INCREMENT PRIMARY KEY,
         user_id INT NOT NULL,
@@ -47,12 +63,13 @@ async function initializeDatabase() {
       )
     `);
 
-        console.log('Banco de dados inicializado com sucesso!');
-        connection.release();
-    } catch (error) {
-        console.error('Erro ao inicializar o banco de dados:', error);
-        throw error;
-    }
+    console.log('Banco de dados inicializado com sucesso!');
+    connection.release();
+  } catch (error) {
+    console.error('Erro ao inicializar o banco de dados:', error);
+    if (connection) connection.release();
+    throw error;
+  }
 }
 
 // Inicializar banco de dados
