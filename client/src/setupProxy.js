@@ -3,8 +3,7 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 module.exports = function (app) {
   console.log('Configurando proxy para API...');
 
-  // Tente se conectar diretamente ao serviço do Docker se estiver rodando no Docker
-  // ou use o localhost se estiver rodando localmente
+  // Usar a URL fornecida pelo ambiente Docker, ou use localhost como fallback
   const apiUrl = process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000';
   console.log('URL da API:', apiUrl);
 
@@ -15,6 +14,9 @@ module.exports = function (app) {
       changeOrigin: true,
       secure: false,
       pathRewrite: { '^/api': '/api' },
+      // Desativar a validação do host - importante para o Docker
+      hostRewrite: false,
+      autoRewrite: false,
       onProxyReq: (proxyReq, req, res) => {
         console.log(`Proxy request: ${req.method} ${req.path} -> ${apiUrl}${req.path}`);
 
@@ -24,6 +26,9 @@ module.exports = function (app) {
 
         // Adicionar flag para indicar origem do request
         proxyReq.setHeader('X-Proxy-Client', 'React-App');
+      },
+      onProxyRes: (proxyRes, req, res) => {
+        console.log(`Proxy response: ${proxyRes.statusCode} for ${req.method} ${req.path}`);
       },
       onError: (err, req, res) => {
         console.log('Proxy Error:', err);
