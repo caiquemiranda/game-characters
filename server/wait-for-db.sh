@@ -7,7 +7,7 @@ host="$1"
 shift
 cmd="$@"
 
-until mysql -h "$host" -u user -ppassword -e 'SELECT 1'; do
+until mysql -h "$host" -u user -ppassword --ssl-mode=DISABLED -e 'SELECT 1'; do
   >&2 echo "MySQL ainda não está disponível - aguardando..."
   sleep 5
 done

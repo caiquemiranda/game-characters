@@ -5,8 +5,9 @@ const { generateToken, authenticateToken } = require('../config/auth');
 const router = express.Router();
 
 // Rota de registro
-router.post('/register', async (req, res) => {
+router.post('/register', async (req, res, next) => {
     try {
+        console.log('Recebida requisição de registro:', req.body);
         const { username, password, email } = req.body;
 
         // Validação
@@ -18,8 +19,10 @@ router.post('/register', async (req, res) => {
             return res.status(400).json({ message: 'A senha deve ter pelo menos 6 caracteres' });
         }
 
+        console.log('Validação passou, tentando registrar usuário...');
         // Registrar usuário
         const newUser = await User.register(username, password, email);
+        console.log('Usuário registrado com sucesso:', username);
 
         // Gerar token
         const token = generateToken(newUser.id);
@@ -34,13 +37,16 @@ router.post('/register', async (req, res) => {
             }
         });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('Erro ao registrar usuário:', error);
+        // Passar o erro para o middleware de tratamento de erros
+        next(error);
     }
 });
 
 // Rota de login
-router.post('/login', async (req, res) => {
+router.post('/login', async (req, res, next) => {
     try {
+        console.log('Recebida requisição de login:', req.body.username);
         const { username, password } = req.body;
 
         // Validação
@@ -64,6 +70,7 @@ router.post('/login', async (req, res) => {
 
         // Gerar token
         const token = generateToken(user.id);
+        console.log('Login bem-sucedido para usuário:', username);
 
         res.json({
             message: 'Login bem-sucedido',
@@ -75,12 +82,13 @@ router.post('/login', async (req, res) => {
             }
         });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('Erro no login:', error);
+        next(error);
     }
 });
 
 // Rota para obter usuário atual
-router.get('/me', authenticateToken, async (req, res) => {
+router.get('/me', authenticateToken, async (req, res, next) => {
     try {
         const user = await User.findById(req.user.id);
 
@@ -90,7 +98,8 @@ router.get('/me', authenticateToken, async (req, res) => {
 
         res.json({ user });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('Erro ao buscar usuário atual:', error);
+        next(error);
     }
 });
 

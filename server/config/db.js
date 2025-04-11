@@ -11,7 +11,10 @@ const pool = mysql.createPool({
   database: process.env.DB_NAME || 'game_characters',
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
+  queueLimit: 0,
+  ssl: false,
+  // Opção necessária para desabilitar o SSL
+  enableSsl: false
 });
 
 // Função para inicializar o banco de dados e criar tabelas se não existirem
