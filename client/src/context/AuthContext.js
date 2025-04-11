@@ -4,6 +4,42 @@ import axios from 'axios';
 // Configuração global do Axios com timeout maior
 axios.defaults.timeout = 30000; // 30 segundos
 
+// Interceptor para logging detalhado
+axios.interceptors.request.use(
+    config => {
+        console.log('Requisição para:', config.url);
+        console.log('  Método:', config.method.toUpperCase());
+        console.log('  Headers:', config.headers);
+        return config;
+    },
+    error => {
+        console.error('Erro na requisição:', error);
+        return Promise.reject(error);
+    }
+);
+
+axios.interceptors.response.use(
+    response => {
+        console.log('Resposta de:', response.config.url);
+        console.log('  Status:', response.status);
+        console.log('  Headers:', response.headers);
+        return response;
+    },
+    error => {
+        if (error.response) {
+            console.error('Erro de resposta para:', error.config?.url);
+            console.error('  Status:', error.response.status);
+            console.error('  Dados:', error.response.data);
+        } else if (error.request) {
+            console.error('Erro na requisição - sem resposta:', error.config?.url);
+            console.error('  Request:', error.request);
+        } else {
+            console.error('Erro geral Axios:', error.message);
+        }
+        return Promise.reject(error);
+    }
+);
+
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
