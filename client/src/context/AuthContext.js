@@ -12,9 +12,11 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // API base URL - importante: no browser sempre usamos localhost:5000
-    // O nome 'server' só funciona dentro da rede Docker
-    const apiUrl = '/api'; // Sempre use o proxy configurado pelo React
+    // API base URL - vamos usar o proxy do React que está configurado em setupProxy.js
+    const apiUrl = '/api';
+
+    // Log da URL da API em uso
+    console.log('AuthContext - API URL em uso:', apiUrl);
 
     // Verificar se o usuário está logado ao carregar
     useEffect(() => {
@@ -52,6 +54,8 @@ export const AuthProvider = ({ children }) => {
     const register = async (formData) => {
         try {
             console.log('Enviando requisição de registro para:', `${apiUrl}/auth/register`);
+            console.log('Dados de registro:', formData);
+
             // Adicione um cabeçalho Accept explícito para garantir que o servidor retorne JSON
             const res = await axios.post(`${apiUrl}/auth/register`, formData, {
                 headers: {
@@ -72,6 +76,14 @@ export const AuthProvider = ({ children }) => {
             return { success: true };
         } catch (err) {
             console.error('Erro no registro:', err);
+            // Log detalhado do erro
+            if (err.response) {
+                console.error('Resposta do servidor:', err.response.data);
+                console.error('Status HTTP:', err.response.status);
+            } else if (err.request) {
+                console.error('Requisição enviada mas sem resposta do servidor');
+            }
+
             const errorMsg = err.response?.data?.message || 'Erro ao registrar usuário. Verifique a conexão com o servidor.';
             setError(errorMsg);
             return { success: false, message: errorMsg };
@@ -82,6 +94,8 @@ export const AuthProvider = ({ children }) => {
     const login = async (formData) => {
         try {
             console.log('Enviando requisição de login para:', `${apiUrl}/auth/login`);
+            console.log('Dados de login:', { username: formData.username, senha: '*****' });
+
             // Adicione um cabeçalho Accept explícito para garantir que o servidor retorne JSON
             const res = await axios.post(`${apiUrl}/auth/login`, formData, {
                 headers: {
@@ -102,6 +116,14 @@ export const AuthProvider = ({ children }) => {
             return { success: true };
         } catch (err) {
             console.error('Erro no login:', err);
+            // Log detalhado do erro
+            if (err.response) {
+                console.error('Resposta do servidor:', err.response.data);
+                console.error('Status HTTP:', err.response.status);
+            } else if (err.request) {
+                console.error('Requisição enviada mas sem resposta do servidor');
+            }
+
             const errorMsg = err.response?.data?.message || 'Credenciais inválidas ou problema de conexão com o servidor.';
             setError(errorMsg);
             return { success: false, message: errorMsg };

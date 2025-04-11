@@ -3,8 +3,9 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 module.exports = function (app) {
   console.log('Configurando proxy para API...');
 
-  // Forçar o uso do endereço IPv4 e evitar completamente o IPv6
-  const apiUrl = 'http://127.0.0.1:5000';
+  // Tente se conectar diretamente ao serviço do Docker se estiver rodando no Docker
+  // ou use o localhost se estiver rodando localmente
+  const apiUrl = process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000';
   console.log('URL da API:', apiUrl);
 
   app.use(
@@ -31,7 +32,8 @@ module.exports = function (app) {
         });
         res.end(JSON.stringify({
           message: 'Erro ao conectar ao servidor da API. Por favor, verifique se o servidor está em execução.',
-          error: err.message
+          error: err.message,
+          apiUrl: apiUrl
         }));
       }
     })
