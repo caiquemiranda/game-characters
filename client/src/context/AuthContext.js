@@ -52,7 +52,13 @@ export const AuthProvider = ({ children }) => {
     const register = async (formData) => {
         try {
             console.log('Enviando requisição de registro para:', `${apiUrl}/auth/register`);
-            const res = await axios.post(`${apiUrl}/auth/register`, formData);
+            // Adicione um cabeçalho Accept explícito para garantir que o servidor retorne JSON
+            const res = await axios.post(`${apiUrl}/auth/register`, formData, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
             console.log('Resposta do registro:', res.data);
 
             localStorage.setItem('token', res.data.token);
@@ -76,7 +82,13 @@ export const AuthProvider = ({ children }) => {
     const login = async (formData) => {
         try {
             console.log('Enviando requisição de login para:', `${apiUrl}/auth/login`);
-            const res = await axios.post(`${apiUrl}/auth/login`, formData);
+            // Adicione um cabeçalho Accept explícito para garantir que o servidor retorne JSON
+            const res = await axios.post(`${apiUrl}/auth/login`, formData, {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
             console.log('Resposta do login:', res.data);
 
             localStorage.setItem('token', res.data.token);

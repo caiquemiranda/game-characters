@@ -12,9 +12,13 @@ const characterRoutes = require('./routes/character');
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
+const HOST = '0.0.0.0'; // Ouvir em todas as interfaces de rede
 
 // Middleware
-app.use(cors());
+app.use(cors({
+    origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+    credentials: true
+}));
 app.use(express.json());
 
 // Rota para verificar saúde da API
@@ -35,6 +39,6 @@ app.use('/api/characters', characterRoutes);
 app.use(errorHandler);
 
 // Iniciar servidor
-app.listen(PORT, () => {
-    console.log(`Servidor rodando na porta ${PORT}`);
+app.listen(PORT, HOST, () => {
+    console.log(`Servidor rodando em http://${HOST}:${PORT}`);
 }); 
