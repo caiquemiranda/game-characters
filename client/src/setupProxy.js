@@ -3,8 +3,8 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 module.exports = function (app) {
   console.log('Configurando proxy para API...');
 
-  // Determinar URL da API baseado no ambiente
-  const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+  // Sempre use localhost:5000 para acessar a API do servidor
+  const apiUrl = 'http://localhost:5000';
   console.log('URL da API:', apiUrl);
 
   app.use(

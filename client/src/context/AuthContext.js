@@ -12,10 +12,9 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // API base URL - versão ajustada para Docker
-    const apiUrl = process.env.NODE_ENV === 'production'
-        ? '/api'
-        : (process.env.REACT_APP_API_URL || 'http://localhost:5000/api');
+    // API base URL - importante: no browser sempre usamos localhost:5000
+    // O nome 'server' só funciona dentro da rede Docker
+    const apiUrl = '/api'; // Sempre use o proxy configurado pelo React
 
     // Verificar se o usuário está logado ao carregar
     useEffect(() => {
