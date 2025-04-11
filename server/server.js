@@ -16,10 +16,18 @@ const HOST = '0.0.0.0'; // Ouvir em todas as interfaces de rede
 
 // Middleware
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
-    credentials: true
+    origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://game-characters-client:3000'],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'X-Proxy-Client']
 }));
 app.use(express.json());
+
+// Log de todas as requisições
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.path} - IP: ${req.ip}`);
+    next();
+});
 
 // Rota para verificar saúde da API
 app.get('/health', (req, res) => {
