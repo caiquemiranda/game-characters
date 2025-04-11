@@ -3,8 +3,8 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 module.exports = function (app) {
   console.log('Configurando proxy para API...');
 
-  // Usar explicitamente o endereço IPv4 para evitar problemas com IPv6
-  const apiUrl = 'http://localhost:5000';
+  // Forçar o uso do endereço IPv4 e evitar completamente o IPv6
+  const apiUrl = 'http://127.0.0.1:5000';
   console.log('URL da API:', apiUrl);
 
   app.use(
@@ -17,8 +17,12 @@ module.exports = function (app) {
       onProxyReq: (proxyReq, req, res) => {
         console.log(`Proxy request: ${req.method} ${req.path} -> ${apiUrl}${req.path}`);
 
-        // Adicionar cabeçalhos específicos para cada requisição
+        // Garantir que os headers corretos estejam presentes
         proxyReq.setHeader('Accept', 'application/json');
+        proxyReq.setHeader('Content-Type', 'application/json');
+
+        // Adicionar flag para indicar origem do request
+        proxyReq.setHeader('X-Proxy-Client', 'React-App');
       },
       onError: (err, req, res) => {
         console.log('Proxy Error:', err);
